@@ -1,4 +1,3 @@
-
 import Head from 'next/head';
 import React, { useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
@@ -6,6 +5,11 @@ import emailjs from '@emailjs/browser';
 export default function Home() {
   const form = useRef();
   const [submitted, setSubmitted] = useState(false);
+  const [fileLabel, setFileLabel] = useState('Choose File');
+
+  const handleFileChange = (e) => {
+    setFileLabel(e.target.files[0]?.name || 'Choose File');
+  };
 
   const sendEmail = (e) => {
     e.preventDefault();
@@ -18,6 +22,7 @@ export default function Home() {
     ).then(() => {
       setSubmitted(true);
       form.current.reset();
+      setFileLabel('Choose File');
     }).catch((error) => {
       console.error('EmailJS error:', error);
       alert('Failed to send RFQ.');
@@ -42,6 +47,10 @@ export default function Home() {
             <p className="mt-4 text-lg text-gray-600">
               This portal allows customers to submit a quotation request (RFQ) for their composite process materials.
               We will propose Guarniflon alternative solutions with the best price and technical match.
+              <br /><br />
+              <span className="font-semibold">
+                Now download the RFQ template and upload it below.
+              </span>
             </p>
           </header>
 
@@ -54,30 +63,46 @@ export default function Home() {
                 <textarea name="message" placeholder="Optional message" rows="4"></textarea>
               </div>
 
-              <div className="space-y-4">
-                <label htmlFor="file-upload" className="block text-center bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition duration-200">
-                  Upload RFQ File
-                </label>
-                <input id="file-upload" type="file" name="file_name" required className="hidden" />
-                
-                <button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition">
-                  Submit RFQ
-                </button>
+              <div className="flex flex-col justify-end space-y-4">
+                <div className="flex gap-4">
+                  <label className="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 px-6 rounded-lg text-center cursor-pointer transition">
+                    {fileLabel}
+                    <input
+                      type="file"
+                      name="file_name"
+                      required
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                  </label>
+                  <button
+                    type="submit"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition"
+                  >
+                    Submit RFQ
+                  </button>
+                </div>
+                {submitted && (
+                  <p className="text-green-600 text-sm font-medium text-center">RFQ successfully submitted!</p>
+                )}
               </div>
             </section>
           </form>
 
-          <footer className="text-center mt-12 border-t pt-6 text-sm text-gray-500">
-            <a href="https://www.guarniflon.com" target="_blank" rel="noopener noreferrer" className="underline">
-              Go to guarniflon.com
-            </a>
-            <span className="mx-2">|</span>
-            <a href="/FORMAT_RFQ_GUARNIFLON_AIVS_v5.xlsx" download className="underline text-blue-700">
+          <div className="text-center mt-12">
+            <a
+              href="/FORMAT_RFQ_GUARNIFLON_AIVS_v5.xlsx"
+              download
+              className="text-blue-700 underline text-sm"
+            >
               Download RFQ Template
             </a>
-            {submitted && (
-              <p className="text-green-600 font-semibold mt-4">RFQ successfully submitted!</p>
-            )}
+          </div>
+
+          <footer className="text-center mt-8 text-sm text-black">
+            <a href="https://www.guarniflon.com" target="_blank" rel="noopener noreferrer">
+              Go to guarniflon.com
+            </a>
           </footer>
         </div>
       </main>
